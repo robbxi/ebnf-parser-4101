@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Bootstrap Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>Parser</h1>
+    <div class="container">
+        <label for="input">Input</label>
+        <div class="row">
+            <div class="col">
+                <textarea class="form-control" id="input" rows="20" style="resize: none;" spellcheck="false">
+program
+value = 32;
+mod1 = 45;
+z = mod1 / value * (value % 7) + mod1;
+loop (i = 0 : value)
+z = z + mod1;
+end_loop
+if (z >= 50)
+newValue = 50 / mod1;
+x = mod1;
+end_if
+end_program
+                </textarea>
+            </div>
+            <div class="col">
+                <textarea class="form-control" id="output" rows="20" style="resize: none;" readonly></textarea>
+            </div>
+        </div>
+        <button class="btn btn-primary" id="parse" onclick="parseInput()">Parse</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="lexxer.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
