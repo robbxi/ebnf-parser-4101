@@ -61,28 +61,15 @@ function lex(code) {
     let word = "";
     for(i = 0 ; i < code.length; i++) {
         let char = code[i];
-        if(char === " " || char === "\n" || char === "\t") {
-            if(word !== "") {
-                let token = tokenTypeMap.get(word);
-                if(token !== undefined) {
-                    tokens.push(tokenTypeMap.get(word));
-                } else if (alphaRegex.test(word)) {
-                    tokens.push(tokenType.IDENT);
-                } else if (numericRegex.test(word)) {
-                    tokens.push(tokenType.LITERAL);
-                } else {
-                    throw new Error("Unidentified token:", word);
-                }
-                word = "";
-            }
-            continue;
-        }
         if(!alphanumericRegex.test(char)) {
             if(word !== "") {
                 let token = tokenTypeMap.get(word);
                 if(token !== undefined) {
                     tokens.push(tokenTypeMap.get(word));
                 } else if (alphaRegex.test(word)) {
+                    if(numericRegex.test(word[0])) {
+                        throw new Error("Unidentified token: " + word);
+                    }
                     tokens.push(tokenType.IDENT);
                 } else if (numericRegex.test(word)) {
                     tokens.push(tokenType.LITERAL);
@@ -90,6 +77,9 @@ function lex(code) {
                     throw new Error("Unidentified token: " + word);
                 }
                 word = "";
+            }
+            if(char === " " || char === "\n" || char === "\t"){
+                continue;
             }
             
             if(char === "=" || char === "!" || char === ">" || char === "<"){
