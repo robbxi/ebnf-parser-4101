@@ -136,16 +136,17 @@ class RecursiveDescentParser{
     }
 
     match(token) {
+        
         if(this.tokens[this.index] === token) {
             this.index++;
         } else {
-            throw new Error("Unexpected token1: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index + "\nExpected: " + Object.keys(tokenType)[token]);
+            throw new Error("Unexpected token: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index + "\nExpected: " + Object.keys(tokenType)[token]);
         }
     }
 
     program() {
         this.match(tokenType.START_PROGRAM);
-        while(this.tokens[this.index] !== tokenType.END_PROGRAM && this.index < this.tokens.length) {
+        while(this.tokens[this.index] !== tokenType.END_PROGRAM && this.index < this.tokens.length-1) {
             this.statement();
         }
         this.match(tokenType.END_PROGRAM);
@@ -160,7 +161,7 @@ class RecursiveDescentParser{
         } else if(this.tokens[this.index] === tokenType.START_LOOP) {
             this.loop();
         } else {
-            throw new Error("Unexpected token2: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index, "\nExpected: " + Object.keys(tokenType)[token]);
+            throw new Error("Unexpected token in statement: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index);
         }
         
     }
@@ -221,7 +222,7 @@ class RecursiveDescentParser{
             this.expression();
             this.match(tokenType.CLOSE_PAREN);
         } else {
-            throw new Error("Unexpected token3: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index, "\nExpected: " + Object.keys(tokenType)[token]);
+            throw new Error("Unexpected token in term: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index);
         }
     }
 
