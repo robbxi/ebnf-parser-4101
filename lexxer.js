@@ -198,9 +198,12 @@ class RecursiveDescentParser{
 
     logicExpression() {
         this.term();
-        while(this.tokens[this.index] === tokenType.EQUAL_LOGIC || this.tokens[this.index] === tokenType.NOT_EQUAL_LOGIC || this.tokens[this.index] === tokenType.GREATER_THAN_LOGIC || this.tokens[this.index] === tokenType.LESS_THAN_LOGIC || this.tokens[this.index] === tokenType.GREATER_THAN_EQUAL_LOGIC || this.tokens[this.index] === tokenType.LESS_THAN_EQUAL_LOGIC) {
+        
+        if(this.tokens[this.index] === tokenType.EQUAL_LOGIC || this.tokens[this.index] === tokenType.NOT_EQUAL_LOGIC || this.tokens[this.index] === tokenType.GREATER_THAN_LOGIC || this.tokens[this.index] === tokenType.LESS_THAN_LOGIC || this.tokens[this.index] === tokenType.GREATER_THAN_EQUAL_LOGIC || this.tokens[this.index] === tokenType.LESS_THAN_EQUAL_LOGIC) {
             this.match(this.tokens[this.index]);
             this.term();
+        }else{
+            throw new Error("Unexpected token in logicExpression: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index);
         }
     }
 
