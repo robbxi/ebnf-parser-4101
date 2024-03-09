@@ -52,7 +52,7 @@ const tokenTypeMap = new Map([
     ["end", tokenType.END_CONDITIONAL]
 ]);
 
-const alphanumericRegex = /[a-zA-Z0-9_-]/;
+const alphanumericRegex = /[a-zA-Z0-9_]/;
 const numericRegex = /[0-9]/;
 const alphaRegex = /[a-zA-Z_-]/;
 
