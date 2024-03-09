@@ -3,14 +3,20 @@
 <head>
     <title>EBNF Parser</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #input, #output {
+            font-size: 1.5em;
+        }
+    
+    </style>
 </head>
 <body>
     <h1>Parser</h1>
     <div class="container">
         <label for="input">Input</label>
         <div class="row">
-            <div class="col">
-                <textarea class="form-control" id="input" rows="20" style="resize: none;" spellcheck="false">
+            <div class=" col-xl-6 col-sm-12">
+                <textarea class="form-control text-lg" id="input" rows="20" style="resize: none;" spellcheck="false">
 program
 value = 32;
 mod1 = 45;
@@ -25,13 +31,13 @@ end_if
 end_program
                 </textarea>
             </div>
-            <div class="col">
-                <textarea class="form-control" id="output" rows="20" style="resize: none;" readonly></textarea>
+            <div class="col-xl-6 col-sm-12">
+                <textarea class="form-control text-sm-lg" id="output" rows="20" style="resize: none;" readonly></textarea>
             </div>
         </div>
 
-        <button class="btn btn-primary" id="lex" onclick="lexInput()">Lex</button>
-        <button class="btn btn-success" id="parse" onclick="parseInput()">Parse</button>
+        <button class="btn btn-primary btn-lg" id="lex" onclick="lexInput()">Lex</button>
+        <button class="btn btn-success btn-lg" id="parse" onclick="parseInput()">Parse</button>
         
     </div>
 
