@@ -57,32 +57,50 @@ const numericRegex = /[0-9]/;
 const alphaRegex = /[a-zA-Z_-]/;
 
 function lex(code) {
+    // Initialize tokens array
     let tokens = [];
+    // Initialize word string
     let word = "";
+    // Iterate through code string
     for(i = 0 ; i < code.length; i++) {
+        // Set current character
         let char = code[i];
+        // Check if character is a number or a letter
         if(!alphanumericRegex.test(char)) {
+            // Check if word is not empty
             if(word !== "") {
+                //if it isnt empty, check if it is a keyword
                 let token = tokenTypeMap.get(word);
+
                 if(token !== undefined) {
+                    //if it is a keyword, push the token to the tokens array
                     tokens.push(tokenTypeMap.get(word));
                 } else if (alphaRegex.test(word)) {
+                    //if it is not a keyword, check if it is an identifier, but first make sure it does not start with a number
                     if(numericRegex.test(word[0])) {
+                        //if it starts with a number, throw an error
                         throw new Error("Unidentified token: " + word);
                     }
+                    //if it is a valid identifier, push the IDENT token to the tokens array
                     tokens.push(tokenType.IDENT);
                 } else if (numericRegex.test(word)) {
+                    //if it is not an identifier, check if it is a number, if so push the LITERAL token to the tokens array
                     tokens.push(tokenType.LITERAL);
                 } else {
+                    //if it is not a number or an identifier, or a keyword, throw an error
                     throw new Error("Unidentified token: " + word);
                 }
+                //reset the word
                 word = "";
             }
+            //check if the character is a space, tab, or newline, if so, continue to the next iteration
             if(char === " " || char === "\n" || char === "\t"){
                 continue;
             }
             
+            //check if the character is one of the following special characters that could be followed by an equal sign
             if(char === "=" || char === "!" || char === ">" || char === "<"){
+                //check if the next character is an equal sign, if so, push the token to the tokens array and increment the index
                 if(code[i + 1] === "=") {
                     const token = tokenTypeMap.get(char + code[i + 1]);
                     if (token !== undefined) {
@@ -94,21 +112,23 @@ function lex(code) {
                 }
             } 
             else {
+                //if it is not one of those special characters, check if it is a different special character, if its identified, add it to the tokens array
                 const token = tokenTypeMap.get(char);
                 if (token !== undefined) {
                     tokens.push(token);
                 } else {
+                    //if it is not identified, throw an error
                     throw new Error("Unidentified token: " + char);
                 }
             }
 
-        }else if (alphanumericRegex.test(char)) {
+        }else {
+            //if the character is a number or a letter, add it to the word string
             word += char;
-        } else {
-            throw new Error("Unidentified token: " + char);
-        }
+        } 
 
     }
+    //return the tokens array
     return tokens;
 }
 
