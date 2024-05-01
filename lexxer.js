@@ -134,14 +134,14 @@ function lex(code) {
 
 /*
 EBNF Grammar:
-program = "program" {statement} "end_program";
-statement = assignment | conditional | loop;
-assignment = "IDENT" "=" expression ";";
-conditional = "if" "(" logicExpression ")" {statement} "end_if";
-loop = "loop" "(" assignment ":" expression ")" {statement} "end_loop";
-logicExpression = term {("==" | ">=" | "<=" | "!=" | "<" |">") term};
-expression = term {("+" | "-"| "/" | "%" | "*") term};
-term = "IDENT" | "LITERAL" | "(" expression ")";
+<program> -> ("program" {statement} "end_program")
+<statement> -> <assignment> | <conditional> | <loop>
+<assignment> -> "IDENT" "=" <expression> ";"
+<conditional> -> ("if" "(" <logicExpression> ")") {<statement>} ("end_if")
+<loop> -> "loop" "(" <assignment> ":" <term> ")" {<statement>} "end_loop"
+<logicExpression> -> <term> ("==" | ">=" | "<=" | "!=" | "<" |">") <term>
+<expression> -> <term> {("+" | "-"| "/" | "%" | "*") <term>}
+<term> -> "IDENT" | "LITERAL" | [(] (<expression>|<term>) [)]
 */
 
 
@@ -152,83 +152,108 @@ class RecursiveDescentParser{
     }
 
     parse() {
+        //start parse
         this.program();
     }
 
     match(token) {
+        //mathces the current token with the expected token
         
         if(this.tokens[this.index] === token) {
+            //if the current token is the expected token, increment the index
             this.index++;
         } else {
+            //if the current token is not the expected token, throw an error
             throw new Error("Unexpected token: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index + "\nExpected: " + Object.keys(tokenType)[token]);
         }
     }
 
     program() {
+        //start of the program
         this.match(tokenType.START_PROGRAM);
+        //loop through the statements until the end of the program
         while(this.tokens[this.index] !== tokenType.END_PROGRAM && this.index < this.tokens.length-1) {
             this.statement();
         }
+        //match end of the program
         this.match(tokenType.END_PROGRAM);
     }
 
     statement() {
+        //check if the current token is an identifier, if so, it is an assignment
         if(this.tokens[this.index] === tokenType.IDENT) {
             this.assignment();
+            //match the semicolon
             this.match(tokenType.SEMICOLON);
+        
+        //check if the current token is start conditional, if so, it is a conditional   
         } else if(this.tokens[this.index] === tokenType.START_CONDITIONAL) {
             this.conditional();
+        
+        //check if the current token is start loop, if so, it is a loop
         } else if(this.tokens[this.index] === tokenType.START_LOOP) {
             this.loop();
         } else {
+            //if the current token is not an identifier, start conditional, or start loop, throw an error
             throw new Error("Unexpected token in statement: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index);
         }
         
     }
 
     assignment() {
+        //match the identifier, the assignment operator, and the expression
         this.match(tokenType.IDENT);
         this.match(tokenType.ASSIGN);
         this.expression();
     }
 
     conditional() {
+        //match the start conditional, open paren, logic expression, and close paren
         this.match(tokenType.START_CONDITIONAL);
         this.match(tokenType.OPEN_PAREN);
         this.logicExpression();
         this.match(tokenType.CLOSE_PAREN);
+        //loop through the statements until the end of the conditional
         while(this.tokens[this.index] !== tokenType.END_CONDITIONAL && this.index < this.tokens.length -1) {
             this.statement();
         }
+        //match the end of the conditional
         this.match(tokenType.END_CONDITIONAL);
     }
     
     loop() {
+        //match the start loop, open paren, assignment, colon, expression, and close paren
         this.match(tokenType.START_LOOP);
         this.match(tokenType.OPEN_PAREN);
         this.assignment();
         this.match(tokenType.COLON);
         this.expression();
         this.match(tokenType.CLOSE_PAREN);
+        //loop through the statements until the end of the loop
         while(this.tokens[this.index] !== tokenType.END_LOOP && this.index < this.tokens.length -1) {
             this.statement();
         }
+        //match the end of the loop
         this.match(tokenType.END_LOOP);
     }
 
     logicExpression() {
+        //go to term
         this.term();
-        
+        //check if the current token is a logic operator, if so, match it and go to term
         if(this.tokens[this.index] === tokenType.EQUAL_LOGIC || this.tokens[this.index] === tokenType.NOT_EQUAL_LOGIC || this.tokens[this.index] === tokenType.GREATER_THAN_LOGIC || this.tokens[this.index] === tokenType.LESS_THAN_LOGIC || this.tokens[this.index] === tokenType.GREATER_THAN_EQUAL_LOGIC || this.tokens[this.index] === tokenType.LESS_THAN_EQUAL_LOGIC) {
             this.match(this.tokens[this.index]);
             this.term();
         }else{
+            //if the current token is not a logic operator, throw an error
             throw new Error("Unexpected token in logicExpression: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index);
         }
     }
 
     expression() {
+        //go to term
         this.term();
+        //check if the current token is an operator, if so, match it and go to term
         while(this.tokens[this.index] === tokenType.ADD_OP || this.tokens[this.index] === tokenType.SUBTRACT_OP || this.tokens[this.index] === tokenType.MULTIPLY_OP || this.tokens[this.index] === tokenType.DIVIDE_OP || this.tokens[this.index] === tokenType.MOD_OP) {
             this.match(this.tokens[this.index]);
             this.term();
@@ -236,15 +261,19 @@ class RecursiveDescentParser{
     }
 
     term() {
+        //check if the current token is an identifier, literal, or open paren, if so, match it
         if(this.tokens[this.index] === tokenType.IDENT) {
             this.match(tokenType.IDENT);
         } else if(this.tokens[this.index] === tokenType.LITERAL) {
             this.match(tokenType.LITERAL);
         } else if(this.tokens[this.index] === tokenType.OPEN_PAREN) {
             this.match(tokenType.OPEN_PAREN);
+            //go to expression
             this.expression();
+            //match close paren
             this.match(tokenType.CLOSE_PAREN);
         } else {
+            //if the current token is not an identifier, literal, or open paren, throw an error
             throw new Error("Unexpected token in term: " + Object.keys(tokenType)[this.tokens[this.index]] + " at index: " + this.index);
         }
     }
